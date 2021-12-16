@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.skin.TableHeaderRow?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.jaiz.desktop.views.MainView"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <GridPane fx:id="topGP">
+        <Button fx:id="choosePptBtn" text="请选择PPT文件" onAction="#choosePptBtnAction" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <Label fx:id="pptFileNameLabel"  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Button fx:id="chooseExcelBtn" text="请选择excel文件" onAction="#chooseExcelBtnAction" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label fx:id="excelFileNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    </GridPane>
+
+    <TableView fx:id="middleTV" editable="true" AnchorPane.topAnchor="55" prefHeight="100" maxHeight="100" prefWidth="500">
+        <columns>
+            <TableColumn fx:id="idCol" text="id" prefWidth="125" sortable="false" visible="false" />
+            <TableColumn fx:id="argNameCol" text="参数名" prefWidth="125" sortable="false" />
+            <TableColumn fx:id="argPosCol" text="参数值位置" prefWidth="125" sortable="false" />
+            <TableColumn fx:id="argValueCol" text="当前值" prefWidth="125" sortable="false" />
+            <TableColumn fx:id="opCol" text="操作" prefWidth="125" sortable="false" />
+        </columns>
+    </TableView>
+    <HBox>
+        <Button fx:id="addArgBtn" text="添加参数" onAction="#addArg" />
+        <Button fx:id="clearArgBtn" text="清空参数" onAction="#clearArg" />
+    </HBox>
+
+</AnchorPane>
