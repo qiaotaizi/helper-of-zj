@@ -27,7 +27,7 @@ public record PptRenderer(XMLSlideShow ppt,
     /**
      * 在一张幻灯片中，遍历所有文本框
      *
-     * @param slide
+     * @param slide 幻灯片
      */
     private void renderOneSlides(XSLFSlide slide) {
         var shapes = slide.getShapes();
@@ -37,7 +37,7 @@ public record PptRenderer(XMLSlideShow ppt,
     /**
      * 在一个shape中，进行文本替换
      *
-     * @param shape
+     * @param shape 形状
      */
     private void renderOneShape(XSLFShape shape) {
         if (shape instanceof TextShape<?,?>){
@@ -49,7 +49,7 @@ public record PptRenderer(XMLSlideShow ppt,
     /**
      * 替换shape中的文本
      * TODO 可以考虑使用模板引擎替换简单的文字替换
-     * @param shape
+     * @param shape 转型为textShape的形状
      */
     private void replace(TextShape<?,?> shape) {
 

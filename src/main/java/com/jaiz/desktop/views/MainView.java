@@ -86,7 +86,7 @@ public class MainView{
 
         configManager=new ConfigManager<>("helper-of-zj");
         //初始化config文件夹
-        configManager.validateAndInit(new TypeReference<AppProperties>(){});
+        configManager.validateAndInit(new TypeReference<>(){});
         var appProperties=configManager.configBean();
         if (appProperties.getArgsConfigList()==null){
             appProperties.setArgsConfigList(new ArrayList<>());
@@ -141,28 +141,22 @@ public class MainView{
 
         if (excelFileNameLabel.getUserData()!=null){
             var wb = (Workbook)excelFileNameLabel.getUserData();
-            wb.sheetIterator().forEachRemaining(sheet->{
-                result.getArgSheet().getItems().add(sheet.getSheetName());
-            });
+            wb.sheetIterator().forEachRemaining(sheet->
+                    result.getArgSheet().getItems().add(sheet.getSheetName()));
         }
 
 
-        delete.setOnAction(event->{
-            middleTV.getItems().remove(result);
-        });
+        delete.setOnAction(event-> middleTV.getItems().remove(result));
         var argPosTF = result.getArgPosInExcel();
         var curValLabel=result.getArgValue();
         var sheetChoiceBox=result.getArgSheet();
-        argPosTF.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
-                if (!newValue){
-                    //失焦了
-                    //读取指定位置的值
-                    CellReader cr=new CellReader();
-                    var value = cr.read((Workbook)excelFileNameLabel.getUserData(),sheetChoiceBox.getSelectionModel().getSelectedItem(),argPosTF.getText());
-                    curValLabel.setText(value);
-                }
+        argPosTF.focusedProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (!newValue){
+                //失焦了
+                //读取指定位置的值
+                CellReader cr=new CellReader();
+                var value = cr.read((Workbook)excelFileNameLabel.getUserData(),sheetChoiceBox.getSelectionModel().getSelectedItem(),argPosTF.getText());
+                curValLabel.setText(value);
             }
         });
         return result;
@@ -174,7 +168,7 @@ public class MainView{
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent 事件对象
      */
     public void render(ActionEvent actionEvent) throws IOException {
         //选择生成文件位置

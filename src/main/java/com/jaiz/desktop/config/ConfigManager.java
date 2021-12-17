@@ -24,8 +24,7 @@ public class ConfigManager<T> {
      * 初始化config文件夹
      * 初始化配置文件
      * 从配置文件初始化配置对象
-     * @param appPropertiesTypeReference
-     * @return
+     * @param ref 配置对象的typeRef
      */
     public void validateAndInit(TypeReference<T> ref) throws IOException {
 
@@ -72,7 +71,6 @@ public class ConfigManager<T> {
 
     /**
      * 同步配置内容到文件
-     * @param configObject
      */
     public void syncConfigFile() throws IOException {
         var json=JSONUtils.toJsonString(configBean());
