@@ -1,6 +1,7 @@
 package com.jaiz.desktop.entities;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lombok.Getter;
@@ -11,14 +12,14 @@ import lombok.Setter;
 public class PptArg {
 
     /**
-     * uuid
-     */
-    private Label id = new Label();
-
-    /**
      * 参数名
      */
     private TextField argName = new TextField();
+
+    /**
+     * 参数所在的sheet
+     */
+    private ChoiceBox<String> argSheet = new ChoiceBox<>();
 
     /**
      * 参数所在的位置

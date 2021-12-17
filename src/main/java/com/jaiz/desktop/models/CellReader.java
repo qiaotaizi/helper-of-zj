@@ -1,22 +1,20 @@
 package com.jaiz.desktop.models;
 
 import com.jaiz.desktop.ex.DesktopException;
-import javafx.scene.control.TextField;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CellReader {
 
-    public String read(Workbook wb, String argPosInExcel) {
+    public String read(Workbook wb,String sheetName, String argPosInExcel) {
 
         var pos=parse(argPosInExcel);
         if (wb == null){
             return "";
         }
-        var sheet=wb.getSheetAt(0);
+        var sheet=wb.getSheet(sheetName);
         if (sheet==null){
             return "";
         }
@@ -49,8 +47,6 @@ public class CellReader {
             throw new DesktopException("格式错误：row");
         }
         var rowPos=rowMat.group();
-
-        System.out.println(colPos+","+rowPos);
 
         return new CellPosition(rowPos2Index(rowPos),colPos2Index(colPos));
     }

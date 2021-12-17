@@ -15,7 +15,7 @@ public record ArgMapBuilder(Workbook wb) {
         var args = tableView.getItems();
         var cellReader=new CellReader();
         return args.stream().collect(Collectors.toMap(arg->arg.getArgName().getText(),arg->{
-            return cellReader.read(wb,arg.getArgPosInExcel().getText());
+            return cellReader.read(wb,arg.getArgSheet().getSelectionModel().getSelectedItem(),arg.getArgPosInExcel().getText());
         },(oV,nV)->{
             throw new DesktopException("参数名冲突："+oV);
         }));
