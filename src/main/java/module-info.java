@@ -14,4 +14,5 @@ module helper.of.zj {
     exports com.jaiz.desktop.models;
     exports com.jaiz.desktop.views;
     exports com.jaiz.desktop.entities;
+    exports com.jaiz.desktop.ex;
 }

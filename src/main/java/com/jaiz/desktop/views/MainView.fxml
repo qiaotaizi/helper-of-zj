@@ -19,18 +19,19 @@
         <Label fx:id="excelFileNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
     </GridPane>
 
-    <TableView fx:id="middleTV" editable="true" AnchorPane.topAnchor="55" prefHeight="100" maxHeight="100" prefWidth="500">
+    <TableView fx:id="middleTV" AnchorPane.topAnchor="55" prefHeight="200" maxHeight="200" prefWidth="500">
         <columns>
-            <TableColumn fx:id="idCol" text="id" prefWidth="125" sortable="false" visible="false" />
-            <TableColumn fx:id="argNameCol" text="参数名" prefWidth="125" sortable="false" />
-            <TableColumn fx:id="argPosCol" text="参数值位置" prefWidth="125" sortable="false" />
-            <TableColumn fx:id="argValueCol" text="当前值" prefWidth="125" sortable="false" />
-            <TableColumn fx:id="opCol" text="操作" prefWidth="125" sortable="false" />
+            <TableColumn fx:id="idCol" reorderable="false" resizable="false" text="id" prefWidth="125" sortable="false" visible="false" />
+            <TableColumn fx:id="argNameCol" reorderable="false" resizable="false" text="参数名" prefWidth="125" sortable="false" />
+            <TableColumn fx:id="argPosCol" reorderable="false" resizable="false" text="参数值位置" prefWidth="125" sortable="false" />
+            <TableColumn fx:id="argValueCol" reorderable="false" resizable="false" text="当前值" prefWidth="125" sortable="false" />
+            <TableColumn fx:id="opCol" reorderable="false" resizable="false" text="操作" prefWidth="125" sortable="false" />
         </columns>
     </TableView>
-    <HBox>
+    <HBox AnchorPane.topAnchor="260">
         <Button fx:id="addArgBtn" text="添加参数" onAction="#addArg" />
         <Button fx:id="clearArgBtn" text="清空参数" onAction="#clearArg" />
+        <Button fx:id="renderBtn" text="开始渲染" onAction="#render" disable="true" />
     </HBox>
 
 </AnchorPane>

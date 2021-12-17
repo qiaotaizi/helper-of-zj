@@ -1,6 +1,8 @@
 package com.jaiz.desktop.entities;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,22 +13,22 @@ public class PptArg {
     /**
      * uuid
      */
-    private String id;
+    private Label id = new Label();
 
     /**
      * 参数名
      */
-    private String argName;
+    private TextField argName = new TextField();
 
     /**
      * 参数所在的位置
      */
-    private String argPosInExcel;
+    private TextField argPosInExcel = new TextField();
 
     /**
      * 参数值
      */
-    private String argValue;
+    private Label argValue = new Label();
 
     /**
      * 操作按钮
