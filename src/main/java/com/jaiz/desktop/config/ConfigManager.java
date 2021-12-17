@@ -74,8 +74,8 @@ public class ConfigManager<T> {
      * 同步配置内容到文件
      * @param configObject
      */
-    public void syncConfigFile(T configObject) throws IOException {
-        var json=JSONUtils.toJsonString(configObject);
+    public void syncConfigFile() throws IOException {
+        var json=JSONUtils.toJsonString(configBean());
         File configFile = new File(System.getProperty("user.home")+File.separatorChar+"."+configName+File.separatorChar+"config.json");
         writeAll(configFile,json);
     }

@@ -4,6 +4,7 @@ import cn.unicom.wireless.common.util.DateUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jaiz.desktop.config.ConfigManager;
 import com.jaiz.desktop.entities.AppProperties;
+import com.jaiz.desktop.entities.Arg;
 import com.jaiz.desktop.entities.ArgsConfig;
 import com.jaiz.desktop.entities.PptArg;
 import com.jaiz.desktop.ex.DesktopException;
@@ -31,6 +32,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MainView{
 
@@ -68,6 +70,11 @@ public class MainView{
     private Window window;
 
     private ConfigManager<AppProperties> configManager;
+
+    /**
+     * 当前配置的引用
+     */
+    private ArgsConfig currArgsConfig;
 
     public void initialize() throws IOException {
         System.out.println("初始化mainview");
@@ -181,6 +188,7 @@ public class MainView{
         render.render();
         var out=new FileOutputStream(target.getPath()+File.separatorChar+ DateUtil.format(new Date(),"yyyyMMddHHmmss")+".pptx");
         pptFile.write(out);
+        out.close();
         System.out.println("render done");
     }
 
@@ -189,13 +197,45 @@ public class MainView{
         //检查当前配置是否已经有引用
         //若有，更新配置，使用配置对象刷新文件
         //若没有，弹窗要求输入名字，之后新建配置对象，加入配置对象列表，刷新文件
-        var prop = configManager.configBean();
-        var list = prop.getArgsConfigList();
-        var ac=new ArgsConfig();
-        ac.setConfigName("111111111");
-        list.add(ac);
-        configManager.syncConfigFile(prop);
-        System.out.println("prop set");
+        if (currArgsConfig!=null){
+            currArgsConfig.setPptFilePath(pptFileNameLabel.getText());
+            currArgsConfig.setExcelFilePath(excelFileNameLabel.getText());
+            var argList=middleTV.getItems().stream().map(pptArg->{
+                Arg a=new Arg();
+                a.setArgName(pptArg.getArgName().getText());
+                a.setArgPos(pptArg.getArgPosInExcel().getText());
+                a.setArgSheetName(pptArg.getArgSheet().getSelectionModel().getSelectedItem());
+                return a;
+            }).collect(Collectors.toList());
+            currArgsConfig.setArgList(argList);
+            configManager.syncConfigFile();
+            return;
+        }
+        TextInputDialog configNameInputDialog=new TextInputDialog();
+        configNameInputDialog.setHeaderText("请为新的配置命名");
+        configNameInputDialog.setContentText("名称：");
+        var configNameInput = configNameInputDialog.showAndWait();
+        configNameInput.ifPresent(input->{
+            currArgsConfig=new ArgsConfig();
+            currArgsConfig.setPptFilePath(pptFileNameLabel.getText());
+            currArgsConfig.setExcelFilePath(excelFileNameLabel.getText());
+            var argList=middleTV.getItems().stream().map(pptArg->{
+                Arg a=new Arg();
+                a.setArgName(pptArg.getArgName().getText());
+                a.setArgPos(pptArg.getArgPosInExcel().getText());
+                a.setArgSheetName(pptArg.getArgSheet().getSelectionModel().getSelectedItem());
+                return a;
+            }).collect(Collectors.toList());
+            currArgsConfig.setArgList(argList);
+            currArgsConfig.setConfigName(input);
+            configManager.configBean().getArgsConfigList().add(currArgsConfig);
+            try {
+                configManager.syncConfigFile();
+            } catch (IOException e) {
+                System.out.println("同步配置对象至文件失败");
+                e.printStackTrace();
+            }
+        });
     }
 
     public void loadArgs(ActionEvent actionEvent) {

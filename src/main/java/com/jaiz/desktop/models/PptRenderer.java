@@ -40,7 +40,6 @@ public record PptRenderer(XMLSlideShow ppt,
      * @param shape
      */
     private void renderOneShape(XSLFShape shape) {
-        System.out.println("shape is a "+shape.getClass());
         if (shape instanceof TextShape<?,?>){
             //提取文本并替换
             replace((TextShape<?,?>)shape);

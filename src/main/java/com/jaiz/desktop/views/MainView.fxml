@@ -12,14 +12,22 @@
             fx:controller="com.jaiz.desktop.views.MainView"
             prefHeight="400.0" prefWidth="600.0">
 
-    <GridPane fx:id="topGP">
+    <MenuBar useSystemMenuBar="true">
+        <Menu text="菜单">
+            <MenuItem text="保存参数" onAction="#saveArgs"/>
+            <MenuItem text="参数另存为" onAction="#saveArgsAs"/>
+            <MenuItem text="载入参数" onAction="#loadArgs"/>
+        </Menu>
+    </MenuBar>
+
+    <GridPane fx:id="topGP" AnchorPane.topAnchor="40">
         <Button fx:id="choosePptBtn" text="请选择PPT文件" onAction="#choosePptBtnAction" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <Label fx:id="pptFileNameLabel"  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
         <Button fx:id="chooseExcelBtn" text="请选择excel文件" onAction="#chooseExcelBtnAction" GridPane.columnIndex="0" GridPane.rowIndex="1" />
         <Label fx:id="excelFileNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
     </GridPane>
 
-    <TableView fx:id="middleTV" AnchorPane.topAnchor="55" prefHeight="200" maxHeight="200" prefWidth="500">
+    <TableView fx:id="middleTV" AnchorPane.topAnchor="95" prefHeight="200" maxHeight="200" prefWidth="500">
         <columns>
             <TableColumn fx:id="argNameCol" reorderable="false" resizable="false" text="参数名" prefWidth="100" sortable="false" />
             <TableColumn fx:id="argSheetCol" reorderable="false" resizable="false" text="所在表格" prefWidth="100" sortable="false" />
@@ -28,18 +36,10 @@
             <TableColumn fx:id="opCol" reorderable="false" resizable="false" text="操作" prefWidth="100" sortable="false" />
         </columns>
     </TableView>
-    <HBox AnchorPane.topAnchor="260">
+    <HBox AnchorPane.topAnchor="300">
         <Button fx:id="addArgBtn" text="添加参数" onAction="#addArg" />
         <Button fx:id="clearArgBtn" text="清空参数" onAction="#clearArg" />
         <Button fx:id="renderBtn" text="开始渲染" onAction="#render" disable="true" />
     </HBox>
-
-    <MenuBar useSystemMenuBar="true">
-        <Menu text="菜单">
-            <MenuItem text="保存参数" onAction="#saveArgs"/>
-            <MenuItem text="参数另存为" onAction="#saveArgsAs"/>
-            <MenuItem text="载入参数" onAction="#loadArgs"/>
-        </Menu>
-    </MenuBar>
 
 </AnchorPane>

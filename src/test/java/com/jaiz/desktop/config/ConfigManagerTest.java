@@ -12,8 +12,8 @@ public class ConfigManagerTest {
     @Test
     public void validateAndInitTest() throws IOException {
         ConfigManager<AppProperties> cm=new ConfigManager<>("xxx");
-        var config = cm.validateAndInit(new TypeReference<>() {});
-        System.out.println(JSONUtils.toJsonString(config));
+        cm.validateAndInit(new TypeReference<>() {});
+        System.out.println(JSONUtils.toJsonString(cm.configBean()));
     }
 
 }
