@@ -17,4 +17,9 @@ public class ArgsConfig {
 
     private List<Arg> argList;
 
+    @Override
+    public String toString(){
+        return this.configName;
+    }
+
 }

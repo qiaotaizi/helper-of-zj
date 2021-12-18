@@ -113,7 +113,7 @@ public class MainView{
         if (f==null){
             return;
         }
-        changeTextLabel.setText(f.getName());
+        changeTextLabel.setText(f.getPath());
         changeTextLabel.setUserData(fileType.apply(f));
         if (pptFileNameLabel.getUserData()!=null && excelFileNameLabel.getUserData()!=null){
             renderBtn.setDisable(false);
@@ -235,6 +235,19 @@ public class MainView{
     public void loadArgs(ActionEvent actionEvent) {
         System.out.println("load args");
         //弹窗，罗列所有配置对象，提供删除、选择入口
+        ChoiceDialog<ArgsConfig> cd=new ChoiceDialog<>();
+        cd.getItems().addAll(configManager.configBean().getArgsConfigList());
+        cd.setHeaderText("请选择要载入的配置");
+        cd.setContentText("配置：");
+        var choice = cd.showAndWait();
+        choice.ifPresent(argC->{
+            currArgsConfig=argC;
+            System.out.println(currArgsConfig.getExcelFilePath());
+            System.out.println(currArgsConfig.getPptFilePath());
+            System.out.println(currArgsConfig.getArgList());
+        });
+
+        System.out.println("将配置应用到界面");
     }
 
     public void saveArgsAs(ActionEvent actionEvent) {
