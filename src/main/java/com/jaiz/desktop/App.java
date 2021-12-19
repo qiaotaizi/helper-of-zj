@@ -1,6 +1,7 @@
 package com.jaiz.desktop;
 
 
+import com.jaiz.desktop.util.DesktopUtil;
 import com.jaiz.desktop.views.MainSceneBuilder;
 import com.jaiz.desktop.views.MainView;
 import javafx.application.Application;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
  */
 public class App {
     public static void main(String[] args) {
+        DesktopUtil.preDefinedSystemInit();
         Application.launch(HelperApplication.class,args);
     }
 

@@ -19,4 +19,5 @@ module helper.of.zj {
     exports com.jaiz.desktop.entities;
     exports com.jaiz.desktop.ex;
     exports com.jaiz.desktop.config;
+    exports com.jaiz.desktop.util;
 }

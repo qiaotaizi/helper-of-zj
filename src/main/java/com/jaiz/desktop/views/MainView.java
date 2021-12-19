@@ -11,10 +11,6 @@ import com.jaiz.desktop.ex.DesktopException;
 import com.jaiz.desktop.models.ArgMapBuilder;
 import com.jaiz.desktop.models.CellReader;
 import com.jaiz.desktop.models.PptRenderer;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableObjectValue;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -93,17 +89,21 @@ public class MainView{
         }
     }
 
+    /**
+     * file转化为ppt
+     */
+    private final Function<File,?> pptFileConverter = f->{
+        try {
+            return new XMLSlideShow(new FileInputStream(f));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new DesktopException("读取ppt文件失败");
+        }
+
+    };
 
     public void choosePptBtnAction(ActionEvent actionEvent) {
-        commonChooseFile(new FileChooser.ExtensionFilter("PPTX Files (*.pptx)","*.pptx"),pptFileNameLabel,f->{
-            try {
-                return new XMLSlideShow(new FileInputStream(f));
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new DesktopException("读取ppt文件失败");
-            }
-
-        });
+        commonChooseFile(new FileChooser.ExtensionFilter("PPTX Files (*.pptx)","*.pptx"),pptFileNameLabel,pptFileConverter);
     }
 
     private void commonChooseFile(FileChooser.ExtensionFilter filter, Label changeTextLabel, Function<File,?> fileType){
@@ -115,28 +115,68 @@ public class MainView{
         }
         changeTextLabel.setText(f.getPath());
         changeTextLabel.setUserData(fileType.apply(f));
+
+        renderBtnEnableCheck();
+    }
+
+    private void renderBtnEnableCheck() {
         if (pptFileNameLabel.getUserData()!=null && excelFileNameLabel.getUserData()!=null){
             renderBtn.setDisable(false);
         }
     }
 
+    /**
+     * file转化为excel
+     */
+    private final Function<File,?> excelFileConverter = f->{
+        try {
+            return new XSSFWorkbook(new FileInputStream(f));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new DesktopException("读取excel文件失败");
+        }
+    };
+
     public void chooseExcelBtnAction(ActionEvent actionEvent) {
-        commonChooseFile(new FileChooser.ExtensionFilter("XLSX Files (*.xlsx)","*.xlsx"),excelFileNameLabel,f->{
-            try {
-                return new XSSFWorkbook(new FileInputStream(f));
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new DesktopException("读取excel文件失败");
+        commonChooseFile(new FileChooser.ExtensionFilter("XLSX Files (*.xlsx)","*.xlsx"),excelFileNameLabel,excelFileConverter);
+    }
+
+    public void addArg(ActionEvent actionEvent) {
+        addArgToMidTV(new PptArg());
+    }
+
+    private void addArgToMidTV(PptArg arg){
+        pptArgEquip_(arg);
+        middleTV.getItems().add(arg);
+    }
+
+    /**
+     * 添加失焦计算当前值监听
+     * @param arg pptArg对象
+     */
+    private void addOnFocusedListenerOnArgPosTF(PptArg arg){
+        var argPosTF = arg.getArgPosInExcel();
+        var curValLabel=arg.getArgValue();
+        var sheetChoiceBox=arg.getArgSheet();
+        argPosTF.focusedProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (!newValue){
+                //失焦了
+                //读取指定位置的值
+                actionOnArgPosTfLostFocus(arg);
             }
         });
     }
 
-    public void addArg(ActionEvent actionEvent) {
-        middleTV.getItems().add(initPptArg());
+    /**
+     * 参数位置文本框失焦时执行的动作
+     */
+    private void actionOnArgPosTfLostFocus(PptArg arg){
+        CellReader cr=new CellReader();
+        var value = cr.read((Workbook)excelFileNameLabel.getUserData(),arg.getArgSheet().getSelectionModel().getSelectedItem(),arg.getArgPosInExcel().getText());
+        arg.getArgValue().setText(value);
     }
 
-    private PptArg initPptArg() {
-        var result=new PptArg();
+    private void pptArgEquip_(PptArg result) {
         var delete = result.getOpBtn();
 
         if (excelFileNameLabel.getUserData()!=null){
@@ -147,19 +187,8 @@ public class MainView{
 
 
         delete.setOnAction(event-> middleTV.getItems().remove(result));
-        var argPosTF = result.getArgPosInExcel();
-        var curValLabel=result.getArgValue();
-        var sheetChoiceBox=result.getArgSheet();
-        argPosTF.focusedProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (!newValue){
-                //失焦了
-                //读取指定位置的值
-                CellReader cr=new CellReader();
-                var value = cr.read((Workbook)excelFileNameLabel.getUserData(),sheetChoiceBox.getSelectionModel().getSelectedItem(),argPosTF.getText());
-                curValLabel.setText(value);
-            }
-        });
-        return result;
+        //添加失焦监听
+        addOnFocusedListenerOnArgPosTF(result);
     }
 
     public void clearArg(ActionEvent actionEvent) {
@@ -186,22 +215,29 @@ public class MainView{
         System.out.println("render done");
     }
 
+    /**
+     * 参数保存的通用部分
+     */
+    private void saveArgsCommon(){
+        currArgsConfig.setPptFilePath(pptFileNameLabel.getText());
+        currArgsConfig.setExcelFilePath(excelFileNameLabel.getText());
+        var argList=middleTV.getItems().stream().map(pptArg->{
+            Arg a=new Arg();
+            a.setArgName(pptArg.getArgName().getText());
+            a.setArgPos(pptArg.getArgPosInExcel().getText());
+            a.setArgSheetName(pptArg.getArgSheet().getSelectionModel().getSelectedItem());
+            return a;
+        }).collect(Collectors.toList());
+        currArgsConfig.setArgList(argList);
+    }
+
     public void saveArgs(ActionEvent actionEvent) throws IOException {
         System.out.println("save args");
         //检查当前配置是否已经有引用
         //若有，更新配置，使用配置对象刷新文件
         //若没有，弹窗要求输入名字，之后新建配置对象，加入配置对象列表，刷新文件
         if (currArgsConfig!=null){
-            currArgsConfig.setPptFilePath(pptFileNameLabel.getText());
-            currArgsConfig.setExcelFilePath(excelFileNameLabel.getText());
-            var argList=middleTV.getItems().stream().map(pptArg->{
-                Arg a=new Arg();
-                a.setArgName(pptArg.getArgName().getText());
-                a.setArgPos(pptArg.getArgPosInExcel().getText());
-                a.setArgSheetName(pptArg.getArgSheet().getSelectionModel().getSelectedItem());
-                return a;
-            }).collect(Collectors.toList());
-            currArgsConfig.setArgList(argList);
+            saveArgsCommon();
             configManager.syncConfigFile();
             return;
         }
@@ -211,16 +247,7 @@ public class MainView{
         var configNameInput = configNameInputDialog.showAndWait();
         configNameInput.ifPresent(input->{
             currArgsConfig=new ArgsConfig();
-            currArgsConfig.setPptFilePath(pptFileNameLabel.getText());
-            currArgsConfig.setExcelFilePath(excelFileNameLabel.getText());
-            var argList=middleTV.getItems().stream().map(pptArg->{
-                Arg a=new Arg();
-                a.setArgName(pptArg.getArgName().getText());
-                a.setArgPos(pptArg.getArgPosInExcel().getText());
-                a.setArgSheetName(pptArg.getArgSheet().getSelectionModel().getSelectedItem());
-                return a;
-            }).collect(Collectors.toList());
-            currArgsConfig.setArgList(argList);
+            saveArgsCommon();
             currArgsConfig.setConfigName(input);
             configManager.configBean().getArgsConfigList().add(currArgsConfig);
             try {
@@ -242,9 +269,21 @@ public class MainView{
         var choice = cd.showAndWait();
         choice.ifPresent(argC->{
             currArgsConfig=argC;
-            System.out.println(currArgsConfig.getExcelFilePath());
-            System.out.println(currArgsConfig.getPptFilePath());
-            System.out.println(currArgsConfig.getArgList());
+            pptFileNameLabel.setText(currArgsConfig.getPptFilePath());
+            pptFileNameLabel.setUserData(pptFileConverter.apply(new File(currArgsConfig.getPptFilePath())));
+            excelFileNameLabel.setText(currArgsConfig.getExcelFilePath());
+            excelFileNameLabel.setUserData(excelFileConverter.apply(new File(currArgsConfig.getExcelFilePath())));
+            currArgsConfig.getArgList().forEach(a->{
+                PptArg pa=new PptArg();
+                pa.getArgName().setText(a.getArgName());
+                pa.getArgSheet().getSelectionModel().select(a.getArgSheetName());
+                var posTF=pa.getArgPosInExcel();
+                posTF.setText(a.getArgPos());
+                addArgToMidTV(pa);
+                actionOnArgPosTfLostFocus(pa);
+            });
+            renderBtnEnableCheck();
+            renderBtn.requestFocus();
         });
 
         System.out.println("将配置应用到界面");
