@@ -11,8 +11,8 @@
     <MenuBar useSystemMenuBar="true">
         <Menu text="菜单">
             <MenuItem text="保存参数" onAction="#saveArgs"/>
-            <MenuItem text="参数另存为" onAction="#saveArgsAs"/>
             <MenuItem text="载入参数" onAction="#loadArgs"/>
+            <MenuItem text="删除参数" onAction="#deleteArgs"/>
         </Menu>
     </MenuBar>
 

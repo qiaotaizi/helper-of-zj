@@ -146,7 +146,7 @@ public class MainView{
     }
 
     private void addArgToMidTV(PptArg arg){
-        pptArgEquip_(arg);
+        pptArgEquip(arg);
         middleTV.getItems().add(arg);
     }
 
@@ -176,7 +176,7 @@ public class MainView{
         arg.getArgValue().setText(value);
     }
 
-    private void pptArgEquip_(PptArg result) {
+    private void pptArgEquip(PptArg result) {
         var delete = result.getOpBtn();
 
         if (excelFileNameLabel.getUserData()!=null){
@@ -273,6 +273,8 @@ public class MainView{
             pptFileNameLabel.setUserData(pptFileConverter.apply(new File(currArgsConfig.getPptFilePath())));
             excelFileNameLabel.setText(currArgsConfig.getExcelFilePath());
             excelFileNameLabel.setUserData(excelFileConverter.apply(new File(currArgsConfig.getExcelFilePath())));
+            //清空tableView现有的参数
+            middleTV.getItems().clear();
             currArgsConfig.getArgList().forEach(a->{
                 PptArg pa=new PptArg();
                 pa.getArgName().setText(a.getArgName());
@@ -289,8 +291,15 @@ public class MainView{
         System.out.println("将配置应用到界面");
     }
 
-    public void saveArgsAs(ActionEvent actionEvent) {
-        System.out.println("save args as");
-        //弹窗，要求输入名称，之后新建配置对象，加入配置对象列表，刷新文件
+    public void deleteArgs(ActionEvent actionEvent) {
+        System.out.println("delete args");
+        //弹窗，选择
+        ChoiceDialog<ArgsConfig> cd=new ChoiceDialog<>();
+        cd.getItems().addAll(configManager.configBean().getArgsConfigList());
+        cd.setHeaderText("请选择要删除的配置");
+        cd.setContentText("配置：");
+        var choice = cd.showAndWait();
+        choice.ifPresent(arg->
+                configManager.configBean().getArgsConfigList().remove(arg));
     }
 }
