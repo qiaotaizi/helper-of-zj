@@ -286,9 +286,9 @@ public class MainView{
             });
             renderBtnEnableCheck();
             renderBtn.requestFocus();
+            System.out.println("将配置应用到界面");
         });
 
-        System.out.println("将配置应用到界面");
     }
 
     public void deleteArgs(ActionEvent actionEvent) {
