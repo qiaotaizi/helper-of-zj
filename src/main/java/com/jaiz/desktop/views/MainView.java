@@ -291,7 +291,7 @@ public class MainView{
 
     }
 
-    public void deleteArgs(ActionEvent actionEvent) {
+    public void deleteArgs(ActionEvent actionEvent) throws IOException {
         System.out.println("delete args");
         //弹窗，选择
         ChoiceDialog<ArgsConfig> cd=new ChoiceDialog<>();
@@ -301,5 +301,6 @@ public class MainView{
         var choice = cd.showAndWait();
         choice.ifPresent(arg->
                 configManager.configBean().getArgsConfigList().remove(arg));
+        configManager.syncConfigFile();
     }
 }
